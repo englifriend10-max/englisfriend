@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#28287A">
+<title>ENGLI FRIEND – Learn &amp; Master English Grammar</title>
+<!-- Copy favicon.svg / favicon.ico / icon-180.png from the logo kit's /web folder next to this file -->
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+
+<!-- ENGLI FRIEND: single-page app. Backend = Supabase (see SUPABASE_URL / SUPABASE_ANON_KEY in the script). Keep the SQL setup file private. -->
+
+<style>
+:root{--navy:#28287A;--coral:#D03D23;--coral-l:#FF8A6B;--cream:#FFF8F0;--ink:#1c1c3a;--mute:#6b6b8a;--line:#e6dfd3;--card:#fff;--ease:cubic-bezier(.2,.8,.2,1);--spring:cubic-bezier(.34,1.56,.64,1)}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%}
+body{font-family:'Nunito',system-ui,sans-serif;color:var(--ink);background:var(--cream);overflow-x:hidden;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+h1,h2,h3,.serif{font-family:'Fraunces',Georgia,serif;letter-spacing:-.01em}
+button{font:inherit;cursor:pointer;border:0;touch-action:manipulation;user-select:none}
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden}
+.bg i{position:absolute;border-radius:50%;filter:blur(60px);opacity:.35;animation:drift 14s ease-in-out infinite alternate}
+.bg i:nth-child(1){width:60vw;height:60vw;background:var(--coral-l);top:-15vw;right:-15vw}
+.bg i:nth-child(2){width:70vw;height:70vw;background:#9b9be8;bottom:-25vw;left:-20vw;animation-delay:-5s}
+@keyframes drift{to{transform:translate(-6vw,5vw) scale(1.12)}}
+#app{min-height:100dvh;display:flex;flex-direction:column}
+.screen{display:none;flex:1;flex-direction:column;align-items:center;padding:28px 20px 12px;width:100%;max-width:560px;margin:0 auto}
+.screen.on{display:flex;animation:in .5s var(--ease)}
+@keyframes in{from{opacity:0;transform:translateY(18px) scale(.98)}}
+.logo{width:56px;height:56px;flex:none}
+.logo.big{width:132px;height:132px;filter:drop-shadow(0 14px 22px rgba(40,40,122,.25))}
+/* landing – the E and F slide together and interlock */
+.big .e{animation:ge .9s var(--spring) .1s both}.big .f{animation:gf .9s var(--spring) .1s both}
+@keyframes ge{from{transform:translateX(-60px);opacity:0}}@keyframes gf{from{transform:translateX(60px);opacity:0}}
+.hero{margin:auto;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px}
+.hero h1{font-size:clamp(2.4rem,11vw,3.6rem);font-weight:900;color:var(--navy);line-height:1}
+.hero h1 b{color:var(--coral)}
+.hero p{color:var(--mute);font-weight:700;font-size:1.05rem}
+.btn{background:var(--coral);color:#fff;font-weight:800;letter-spacing:.08em;padding:16px 38px;border-radius:999px;font-size:1.05rem;box-shadow:0 8px 0 #9d2c16,0 14px 24px rgba(208,61,35,.3);transition:transform .15s var(--spring),box-shadow .15s}
+.btn:active{transform:translateY(6px);box-shadow:0 2px 0 #9d2c16}
+.btn.navy{background:var(--navy);box-shadow:0 8px 0 #16164a,0 14px 24px rgba(40,40,122,.3)}
+.btn.navy:active{box-shadow:0 2px 0 #16164a}
+.btn.wide{width:100%}
+.btn.ghost{background:#fff;color:var(--navy);box-shadow:0 0 0 2px var(--navy) inset}
+.btn[disabled]{opacity:.6;pointer-events:none}
+.pulse{animation:pulse 2.2s ease-in-out infinite 1.2s}
+@keyframes pulse{50%{transform:scale(1.06)}}
+.card{background:var(--card);border-radius:24px;padding:22px;width:100%;box-shadow:0 10px 40px rgba(40,40,122,.1);display:flex;flex-direction:column;gap:14px}
+.head{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:18px;text-align:center}
+.head h2{color:var(--navy);font-size:1.7rem}.head p{color:var(--mute);font-weight:600;font-size:.95rem}
+label{font-weight:800;font-size:.85rem;color:var(--navy);display:block;margin-bottom:5px}
+.fld{position:relative}
+input,select{width:100%;font:inherit;font-weight:700;font-size:16px;padding:14px 16px;border:2px solid var(--line);border-radius:14px;background:var(--cream);color:var(--ink);outline:0;transition:border-color .2s,box-shadow .2s}
+input:focus{border-color:var(--navy);box-shadow:0 0 0 4px rgba(40,40,122,.12)}
+.eye{position:absolute;right:6px;bottom:6px;background:none;font-size:1.2rem;padding:8px}
+.err{color:var(--coral);font-weight:800;font-size:.9rem;min-height:1.2em;text-align:center}
+.shake{animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.link{background:none;color:var(--mute);font-weight:800;padding:10px;font-size:.9rem}
+/* dashboard */
+.top{display:flex;align-items:center;gap:12px;width:100%;margin-bottom:14px}
+.top h2{color:var(--navy);font-size:1.35rem;line-height:1.1}.top small{color:var(--mute);font-weight:700}
+.top .sp{flex:1}
+.prog{width:100%;background:#fff;border-radius:18px;padding:14px 16px;box-shadow:0 6px 24px rgba(40,40,122,.08);margin-bottom:18px}
+.prog div.bar{height:12px;background:var(--line);border-radius:9px;overflow:hidden;margin-top:8px}
+.prog div.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--coral),var(--coral-l));border-radius:9px;transition:width 1s var(--ease)}
+.prog b{color:var(--navy)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%}
+@media(min-width:420px){.grid{grid-template-columns:repeat(4,1fr)}}
+.day{aspect-ratio:1.15;border-radius:18px;font-weight:800;font-size:1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;animation:pop .5s var(--spring) both;animation-delay:calc(var(--i)*22ms);transition:transform .15s var(--spring)}
+.day small{font-size:.75rem;font-weight:700;opacity:.8}
+@keyframes pop{from{opacity:0;transform:scale(.6) translateY(10px)}}
+.day.open{background:var(--navy);color:#fff;box-shadow:0 6px 0 #16164a}
+.day.open:active{transform:translateY(5px);box-shadow:0 1px 0 #16164a}
+.day.open.free{background:var(--coral);box-shadow:0 6px 0 #9d2c16}
+.day.locked{background:#ece7dd;color:#9a94a8;box-shadow:0 4px 0 #d9d2c4}
+.day.new{animation:pop .6s var(--spring) both,glow 1.6s 3}
+@keyframes glow{50%{box-shadow:0 0 0 8px rgba(255,138,107,.5)}}
+.lock-tag{grid-column:1/-1;background:#fff3e0;border:2px dashed var(--coral-l);color:#9d2c16;font-weight:800;border-radius:14px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.9rem;margin:6px 0}
+.lock-tag small{font-weight:800;font-variant-numeric:tabular-nums;color:var(--navy)}
+/* lesson */
+.lesson{display:flex;flex-direction:column;gap:16px;width:100%}
+.big-btn{display:flex;align-items:center;gap:16px;text-align:left;padding:22px;border-radius:24px;color:#fff;font-weight:900;font-size:1.4rem;letter-spacing:.06em;transition:transform .2s var(--spring)}
+.big-btn small{display:block;font-weight:700;letter-spacing:0;font-size:.85rem;opacity:.85;margin-top:2px}
+.big-btn span.ic{font-size:2rem}
+.big-btn:active{transform:scale(.97)}
+.big-btn.cls{background:var(--navy);box-shadow:0 10px 30px rgba(40,40,122,.3)}
+.big-btn.wrk{background:var(--coral);box-shadow:0 10px 30px rgba(208,61,35,.3)}
+.player{width:100%;border-radius:20px;overflow:hidden;background:#000;aspect-ratio:16/9;display:none}
+.player.on{display:block;animation:in .4s var(--ease)}
+.player iframe,.player video{width:100%;height:100%;border:0}
+.player .empty{color:#fff;padding:24px;text-align:center;font-weight:700}
+/* admin */
+.tabs{display:flex;gap:8px;width:100%;background:#fff;border-radius:16px;padding:6px;margin-bottom:16px}
+.tabs button{flex:1;padding:12px;border-radius:12px;background:none;font-weight:800;color:var(--mute);transition:all .25s var(--ease)}
+.tabs button.on{background:var(--navy);color:#fff}
+.chips{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.chips button{padding:10px 0;border-radius:12px;background:var(--cream);font-weight:800;color:var(--navy);position:relative;border:2px solid var(--line)}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.ok::after{content:"";position:absolute;top:4px;right:4px;width:7px;height:7px;border-radius:50%;background:#2fa365}
+.row{display:flex;align-items:center;gap:10px;padding:12px;background:var(--cream);border-radius:14px;animation:in .35s var(--ease)}
+.row div{flex:1;min-width:0}.row b{display:block;overflow:hidden;text-overflow:ellipsis}.row small{color:var(--mute);font-weight:700}
+.row button{background:#fde4de;color:var(--coral);border-radius:10px;padding:8px 12px;font-weight:800}
+footer{padding:14px;text-align:center}
+footer button{background:none;color:var(--mute);font-weight:800;letter-spacing:.14em;font-size:.78rem;padding:10px 18px;border-radius:999px;border:1.5px solid var(--line)}
+#toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom));transform:translate(-50%,30px);background:var(--ink);color:#fff;font-weight:800;padding:12px 20px;border-radius:999px;opacity:0;pointer-events:none;transition:all .35s var(--spring);z-index:9;max-width:90vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<!-- Logo sprite (from your logo kit): efc = colour symbol, efr = reversed tile -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <symbol id="efc" viewBox="0 0 256 256"><path fill="#28287A" d="M32 20H186a12 12 0 0 1 12 12V32a12 12 0 0 1 -12 12H44V96H186a12 12 0 0 1 12 12V108a12 12 0 0 1 -12 12H44V172H186a12 12 0 0 1 12 12V184a12 12 0 0 1 -12 12H32a12 12 0 0 1 -12 -12V32a12 12 0 0 1 12 -12Z"/><path fill="#D03D23" d="M70 58H224a12 12 0 0 1 12 12V222a12 12 0 0 1 -12 12H224a12 12 0 0 1 -12 -12V158H70a12 12 0 0 1 -12 -12V146a12 12 0 0 1 12 -12H212V82H70a12 12 0 0 1 -12 -12V70a12 12 0 0 1 12 -12Z"/></symbol>
+ <symbol id="efr" viewBox="0 0 256 256"><rect width="256" height="256" rx="48" fill="#28287A"/><g transform="translate(16 16) scale(0.875)"><path fill="#fff" d="M38 28H140a14 14 0 0 1 14 14V58a14 14 0 0 1 -14 14H68V184H140a14 14 0 0 1 14 14V214a14 14 0 0 1 -14 14H38a14 14 0 0 1 -14 -14V42a14 14 0 0 1 14 -14Z"/><path fill="#FF8A6B" d="M116 106H188V42a14 14 0 0 1 14 -14H218a14 14 0 0 1 14 14V214a14 14 0 0 1 -14 14H202a14 14 0 0 1 -14 -14V150H116a14 14 0 0 1 -14 -14V120a14 14 0 0 1 14 -14Z"/></g></symbol>
+</svg>
+<div class="bg"><i></i><i></i></div>
+
+<div id="app">
+ <!-- 1. LANDING -->
+ <section class="screen on" id="s-landing">
+  <div class="hero">
+   <svg class="logo big" viewBox="0 0 256 256" role="img" aria-label="Engli Friend logo"><path class="e" fill="#28287A" d="M32 20H186a12 12 0 0 1 12 12V32a12 12 0 0 1 -12 12H44V96H186a12 12 0 0 1 12 12V108a12 12 0 0 1 -12 12H44V172H186a12 12 0 0 1 12 12V184a12 12 0 0 1 -12 12H32a12 12 0 0 1 -12 -12V32a12 12 0 0 1 12 -12Z"/><path class="f" fill="#D03D23" d="M70 58H224a12 12 0 0 1 12 12V222a12 12 0 0 1 -12 12H224a12 12 0 0 1 -12 -12V158H70a12 12 0 0 1 -12 -12V146a12 12 0 0 1 12 -12H212V82H70a12 12 0 0 1 -12 -12V70a12 12 0 0 1 12 -12Z"/></svg>
+   <h1 class="serif">ENGLI <b>FRIEND</b></h1>
+   <p>Learn &amp; Master English Grammar</p>
+   <button class="btn pulse" id="startBtn" style="margin-top:18px">START</button>
+  </div>
+ </section>
+
+ <!-- 2. STUDENT LOGIN -->
+ <section class="screen" id="s-login">
+  <div class="head"><svg class="logo"><use href="#efc"/></svg><h2>Welcome, friend!</h2><p>Enter the password you received on WhatsApp</p></div>
+  <form class="card" id="loginForm" autocomplete="on">
+   <div><label for="fName">Full Name</label><input id="fName" required autocomplete="name"></div>
+   <div><label for="fAddr">Address</label><input id="fAddr" required autocomplete="street-address"></div>
+   <div><label for="fPlace">Place</label><input id="fPlace" required autocomplete="address-level2"></div>
+   <div class="fld"><label for="fPass">Password</label><input id="fPass" type="password" required autocomplete="current-password"><button type="button" class="eye" data-eye="fPass" aria-label="Show password">👁</button></div>
+   <div class="err" id="loginErr"></div>
+   <button class="btn wide" id="loginBtn">SUBMIT</button>
+  </form>
+  <button class="link" data-go="landing">← Back</button>
+ </section>
+
+ <!-- 3. DASHBOARD -->
+ <section class="screen" id="s-dash">
+  <div class="top"><svg class="logo"><use href="#efc"/></svg><div><h2 id="hello">Hello!</h2><small>30-Day Grammar Course</small></div><div class="sp"></div><button class="link" id="logout">Log out</button></div>
+  <div class="prog"><span><b id="progTxt">1</b> / 30 days unlocked</span><div class="bar"><i id="progBar"></i></div></div>
+  <div class="grid" id="grid"></div>
+ </section>
+
+ <!-- 4. LESSON -->
+ <section class="screen" id="s-lesson">
+  <div class="head"><svg class="logo"><use href="#efc"/></svg><h2 id="lTitle">Day 1</h2><p>Pick what you'd like to do</p></div>
+  <div class="lesson">
+   <button class="big-btn cls" id="btnClass"><span class="ic">🎬</span><div>CLASS<small>Watch today's video lesson</small></div></button>
+   <div class="player" id="player"></div>
+   <button class="big-btn wrk" id="btnWork"><span class="ic">✏️</span><div>WORK<small>Open today's worksheet</small></div></button>
+   <button class="btn ghost wide" data-go="dash" style="margin-top:6px">← Back to Dashboard</button>
+  </div>
+ </section>
+
+ <!-- 5a. ADMIN LOGIN -->
+ <section class="screen" id="s-alogin">
+  <div class="head"><svg class="logo"><use href="#efr"/></svg><h2>Teacher Login</h2><p>Admin access only</p></div>
+  <form class="card" id="aForm">
+   <div class="fld"><label for="aPass">Admin Password</label><input id="aPass" type="password" required autocomplete="off"><button type="button" class="eye" data-eye="aPass" aria-label="Show password">👁</button></div>
+   <div class="err" id="aErr"></div>
+   <button class="btn navy wide">START</button>
+  </form>
+  <button class="link" data-go="landing">← Back</button>
+ </section>
+
+ <!-- 5b. ADMIN DASHBOARD -->
+ <section class="screen" id="s-admin">
+  <div class="top"><svg class="logo"><use href="#efr"/></svg><div><h2>Teacher Dashboard</h2><small>Engli Friend</small></div><div class="sp"></div><button class="link" id="aExit">Exit</button></div>
+  <div class="tabs"><button class="on" data-tab="stu">👩‍🎓 Students</button><button data-tab="crs">📚 Course</button></div>
+
+  <div class="card" id="tab-stu">
+   <h3 style="color:var(--navy)">Add a new student</h3>
+   <div><label for="nsName">Student Name</label><input id="nsName" placeholder="Exactly as the student will type it"></div>
+   <div><label for="nsPass">Password</label><input id="nsPass" placeholder="e.g. EF-4821"></div>
+   <button class="btn navy wide" id="addStu">ADD STUDENT</button>
+   <div id="stuList" style="display:flex;flex-direction:column;gap:8px;margin-top:6px"></div>
+  </div>
+
+  <div class="card" id="tab-crs" style="display:none">
+   <h3 style="color:var(--navy)">Manage 30 days</h3>
+   <div class="chips" id="chips"></div>
+   <h3 id="editTitle" style="color:var(--coral)">Day 1</h3>
+   <div><label for="cVid">CLASS – video URL</label><input id="cVid" type="url" placeholder="YouTube / Vimeo / Drive / .mp4 link"></div>
+   <div><label for="cWrk">WORK – worksheet / PDF link</label><input id="cWrk" type="url" placeholder="https://..."></div>
+   <button class="btn wide" id="saveDay">SAVE DAY</button>
+  </div>
+ </section>
+
+ <footer><button id="adminBtn">ADMIN</button></footer>
+</div>
+<div id="toast" role="status"></div>
+
+<script>
+/* =====================================================================
+   INSERT SUPABASE KEYS HERE  (Project Settings → API)
+   ===================================================================== */
+const SUPABASE_URL      = 'https://zplrxotncfdjauhjhmqa.supabase.co';        // e.g. https://abcd1234.supabase.co
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwbHJ4b3RuY2ZkamF1aGpobXFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM3ODM3MTksImV4cCI6MjEwOTM1OTcxOX0.iFOyMqm9pfh18i62AaJVoQ-VtqoiWsn5XENR6KH0pHE';   // the public "anon" key (safe: tables are locked by RLS)
+/* ===================================================================== */
+
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const DAY = 864e5;
+const S = { name:'', pass:'', started:0, offset:0, admin:'', shown:1, timer:null, links:{} };
+
+/* ---------- backend: every call goes through a server-side function ---------- */
+async function rpc(fn, args) {
+  const h = { 'Content-Type':'application/json', apikey:SUPABASE_ANON_KEY };
+  if (SUPABASE_ANON_KEY.startsWith('eyJ')) h.Authorization = 'Bearer ' + SUPABASE_ANON_KEY;
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, { method:'POST', headers:h, body:JSON.stringify(args) });
+  if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.message || 'Network error'); }
+  return r.json();
+}
+
+/* ---------- UI helpers ---------- */
+function show(name) {
+  $$('.screen').forEach(s => s.classList.remove('on'));
+  $('#s-' + name).classList.add('on');
+  scrollTo({ top:0 });
+  $('footer').style.display = ['landing','login','dash','alogin'].includes(name) ? '' : 'none';
+}
+let tt; function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 2400); }
+function shake(el) { el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); navigator.vibrate?.(60); }
+function busy(btn, on, txt) { btn.disabled = on; if (txt) btn.textContent = on ? 'Please wait…' : txt; }
+
+document.addEventListener('click', e => {
+  const g = e.target.closest('[data-go]'); if (g) { g.dataset.go === 'dash' ? renderDash() : null; show(g.dataset.go); }
+  const eye = e.target.closest('[data-eye]'); if (eye) { const i = $('#' + eye.dataset.eye); i.type = i.type === 'password' ? 'text' : 'password'; }
+});
+$('#startBtn').onclick = () => show('login');
+
+/* ---------- 2. student login ---------- */
+async function studentLogin(name, pass, addr, place) {
+  const r = await rpc('student_login', { p_name:name, p_password:pass, p_address:addr || null, p_place:place || null });
+  if (!r || !r.ok) return false;
+  Object.assign(S, { name:r.name, pass, started:Date.parse(r.started_at) });
+  S.offset = Date.parse(r.server_now) - Date.now();      // follow the SERVER clock, not the phone's
+  localStorage.setItem('ef_session', JSON.stringify({ n:name, p:pass }));
+  return true;
+}
+$('#loginForm').onsubmit = async e => {
+  e.preventDefault();
+  const btn = $('#loginBtn'), err = $('#loginErr'); err.textContent = ''; busy(btn, true, 'SUBMIT');
+  try {
+    const ok = await studentLogin($('#fName').value, $('#fPass').value, $('#fAddr').value.trim(), $('#fPlace').value.trim());
+    if (ok) { renderDash(); show('dash'); } else { err.textContent = 'Name or password not found. Ask your teacher on WhatsApp.'; shake($('#loginForm')); }
+  } catch (x) { err.textContent = 'Connection problem. Please try again.'; }
+  busy(btn, false, 'SUBMIT');
+};
+$('#logout').onclick = () => { localStorage.removeItem('ef_session'); clearInterval(S.timer); show('landing'); };
+
+/* ---------- 3. dashboard + 24h timer ---------- */
+const unlocked = () => Math.min(30, 1 + Math.floor((Date.now() + S.offset - S.started) / DAY));
+function renderDash(newDay) {
+  const n = S.shown = unlocked();
+  $('#hello').textContent = 'Hi, ' + S.name.split(' ')[0] + '!';
+  $('#progTxt').textContent = n; requestAnimationFrame(() => $('#progBar').style.width = (n / 30 * 100) + '%');
+  let h = '';
+  for (let d = 1; d <= 30; d++) {
+    if (d === n + 1) h += '<div class="lock-tag"><span>🔒 Locked for 24 hours</span><small id="cd"></small></div>';
+    const open = d <= n;
+    h += `<button class="day ${open ? 'open' : 'locked'} ${d === 1 ? 'free' : ''} ${d === newDay ? 'new' : ''}" data-d="${d}" style="--i:${d}">${open ? '' : '🔒'}<span>Day ${d}</span>${d === 1 ? '<small>FREE</small>' : ''}</button>`;
+  }
+  $('#grid').innerHTML = h; tick();
+  clearInterval(S.timer); S.timer = setInterval(tick, 1000);
+}
+function tick() {
+  const n = S.shown; if (n >= 30) return;
+  const left = S.started + n * DAY - (Date.now() + S.offset);
+  if (left <= 0) { const nn = unlocked(); renderDash(nn); toast('🎉 Day ' + nn + ' is now unlocked!'); return; }
+  const cd = $('#cd'); if (cd) { const p = v => String(v).padStart(2, '0'); cd.textContent = `Day ${n + 1} in ${p(Math.floor(left / 36e5))}:${p(Math.floor(left / 6e4) % 60)}:${p(Math.floor(left / 1e3) % 60)}`; }
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden && $('#s-dash').classList.contains('on')) renderDash(); });
+$('#grid').onclick = e => {
+  const b = e.target.closest('.day'); if (!b) return;
+  if (b.classList.contains('locked')) { shake(b); return toast('🔒 Day ' + b.dataset.d + ' is locked. Keep learning – it unlocks soon!'); }
+  openLesson(+b.dataset.d);
+};
+
+/* ---------- 4. lesson ---------- */
+async function openLesson(d) {
+  $('#lTitle').textContent = 'Day ' + d; $('#player').className = 'player'; $('#player').innerHTML = '';
+  S.links = {}; show('lesson');
+  try {
+    const r = await rpc('get_day', { p_name:S.name, p_password:S.pass, p_day:d });   // server re-checks the lock
+    if (!r.ok) { toast('This day is still locked.'); renderDash(); show('dash'); return; }
+    S.links = r;
+  } catch (x) { toast('Connection problem. Try again.'); }
+}
+const safe = u => /^https?:\/\//i.test(u || '') ? u : '';
+function playerHTML(u) {
+  u = safe(u); let m;
+  const frame = s => `<iframe src="${esc(s)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
+  if (!u) return '<p class="empty">Your teacher hasn\'t added this video yet.</p>';
+  if (m = u.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/|embed\/))([\w-]{11})/)) return frame(`https://www.youtube-nocookie.com/embed/${m[1]}?rel=0`);
+  if (m = u.match(/vimeo\.com\/(\d+)/)) return frame(`https://player.vimeo.com/video/${m[1]}`);
+  if (m = u.match(/drive\.google\.com\/file\/d\/([\w-]+)/)) return frame(`https://drive.google.com/file/d/${m[1]}/preview`);
+  if (/\.(mp4|webm|ogg)(\?|$)/i.test(u)) return `<video controls playsinline src="${esc(u)}"></video>`;
+  return frame(u);
+}
+$('#btnClass').onclick = () => {
+  const p = $('#player'); if (p.classList.toggle('on')) { p.innerHTML = playerHTML(S.links.video_url); p.scrollIntoView({ behavior:'smooth', block:'center' }); } else p.innerHTML = '';
+};
+$('#btnWork').onclick = () => { const u = safe(S.links.work_url); u ? window.open(u, '_blank', 'noopener') : toast('Worksheet not added yet.'); };
+
+/* ---------- 5. admin ---------- */
+$('#adminBtn').onclick = () => { $('#aPass').value = ''; $('#aErr').textContent = ''; show('alogin'); };
+$('#aForm').onsubmit = async e => {
+  e.preventDefault(); $('#aErr').textContent = '';
+  try { S.admin = $('#aPass').value; await rpc('admin_students', { p_admin:S.admin }); await loadAdmin(); show('admin'); }
+  catch (x) { S.admin = ''; $('#aErr').textContent = 'Wrong password.'; shake($('#aForm')); }
+};
+$('#aExit').onclick = () => { S.admin = ''; show('landing'); };
+$$('.tabs button').forEach(b => b.onclick = () => {
+  $$('.tabs button').forEach(x => x.classList.toggle('on', x === b));
+  $('#tab-stu').style.display = b.dataset.tab === 'stu' ? '' : 'none'; $('#tab-crs').style.display = b.dataset.tab === 'crs' ? '' : 'none';
+});
+let days = {}, cur = 1;
+async function loadAdmin() {
+  const [st, dd] = await Promise.all([rpc('admin_students', { p_admin:S.admin }), rpc('admin_days', { p_admin:S.admin })]);
+  days = {}; (dd || []).forEach(d => days[d.day] = d);
+  drawStudents(st || []); drawChips();
+}
+function drawStudents(list) {
+  $('#stuList').innerHTML = list.length ? list.map(s => `<div class="row"><div><b>${esc(s.name)}</b><small>Password: ${esc(s.password)}${s.place ? ' · ' + esc(s.place) : ''}</small></div><button data-del="${esc(s.id)}">Delete</button></div>`).join('') : '<small style="color:var(--mute);font-weight:700">No students yet.</small>';
+}
+$('#addStu').onclick = async () => {
+  const n = $('#nsName').value.trim(), p = $('#nsPass').value.trim(); if (!n || !p) return toast('Enter both name and password');
+  try { await rpc('admin_add_student', { p_admin:S.admin, p_student_name:n, p_student_password:p }); $('#nsName').value = $('#nsPass').value = ''; drawStudents(await rpc('admin_students', { p_admin:S.admin })); toast('✅ Student added'); }
+  catch (x) { toast(/duplicate|unique/i.test(x.message) ? 'That name already exists' : x.message); }
+};
+$('#stuList').onclick = async e => {
+  const b = e.target.closest('[data-del]'); if (!b || !confirm('Delete this student?')) return;
+  await rpc('admin_delete_student', { p_admin:S.admin, p_id:b.dataset.del }); drawStudents(await rpc('admin_students', { p_admin:S.admin }));
+};
+function drawChips() {
+  $('#chips').innerHTML = Array.from({ length:30 }, (_, i) => i + 1).map(d => `<button data-c="${d}" class="${d === cur ? 'on' : ''} ${days[d]?.video_url || days[d]?.work_url ? 'ok' : ''}">${d}</button>`).join('');
+  $('#editTitle').textContent = 'Day ' + cur; $('#cVid').value = days[cur]?.video_url || ''; $('#cWrk').value = days[cur]?.work_url || '';
+}
+$('#chips').onclick = e => { const b = e.target.closest('[data-c]'); if (b) { cur = +b.dataset.c; drawChips(); } };
+$('#saveDay').onclick = async () => {
+  const v = $('#cVid').value.trim(), w = $('#cWrk').value.trim();
+  if ((v && !safe(v)) || (w && !safe(w))) return toast('Links must start with https://');
+  try { await rpc('admin_save_day', { p_admin:S.admin, p_day:cur, p_video:v, p_work:w }); days[cur] = { day:cur, video_url:v, work_url:w }; drawChips(); toast('✅ Day ' + cur + ' saved'); }
+  catch (x) { toast(x.message); }
+};
+
+/* ---------- auto-login on reopen ---------- */
+(async () => {
+  show('landing');
+  const s = JSON.parse(localStorage.getItem('ef_session') || 'null'); if (!s) return;
+  try { if (await studentLogin(s.n, s.p)) { renderDash(); show('dash'); } else localStorage.removeItem('ef_session'); } catch (x) { /* offline: stay on landing */ }
+})();
+</script>
+</body>
+</html>
